@@ -3,6 +3,7 @@ import type { CarListItem } from '~/types/car'
 
 const config = useRuntimeConfig()
 const siteUrl = (config.public.siteUrl as string) || 'https://hassanmotors.pk'
+const { settings, whatsappUrl } = useShowroom()
 
 useHead({
   link: [
@@ -11,25 +12,22 @@ useHead({
   script: [
     {
       type: 'application/ld+json',
-      children: JSON.stringify({
+      children: computed(() => JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'AutoDealer',
-        name: 'Hassan Motors',
+        '@id': `${siteUrl}/#dealer`,
+        name: settings.value.showroom_name,
+        description: settings.value.showroom_tagline,
         image: `${siteUrl}/images/showroom.jpg`,
-        telephone: '+923041142642',
+        telephone: settings.value.showroom_phone,
         url: siteUrl,
         address: {
           '@type': 'PostalAddress',
-          streetAddress: 'Main West Canal Road',
-          addressLocality: 'Faisalabad',
+          streetAddress: settings.value.showroom_address,
+          addressLocality: settings.value.showroom_city,
           addressRegion: 'Punjab',
           postalCode: '38000',
           addressCountry: 'PK',
-        },
-        geo: {
-          '@type': 'GeoCoordinates',
-          latitude: '31.4504',
-          longitude: '73.1350',
         },
         openingHoursSpecification: [
           {
@@ -40,7 +38,7 @@ useHead({
           },
         ],
         priceRange: 'PKR 1,000,000 - 50,000,000',
-      }),
+      })),
     },
   ],
 })
@@ -333,18 +331,18 @@ const handleQuickSearch = () => {
             Ready for a Test Drive in Faisalabad?
           </h2>
           <p class="text-xs sm:text-sm font-medium text-neutral-950/85">
-            Visit our physical dealership on Main West Canal Road, Faisalabad or initiate an inquiry on WhatsApp for rapid response.
+            Visit our physical dealership at {{ settings.showroom_address }} or initiate an inquiry on WhatsApp for rapid response.
           </p>
         </div>
 
         <div class="flex flex-wrap gap-4">
           <a
-            href="https://wa.me/923041142642"
+            :href="whatsappUrl"
             target="_blank"
             rel="noopener noreferrer"
             class="px-8 py-3.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-neutral-950 text-white hover:bg-neutral-900 transition shadow-lg"
           >
-            Chat with Hassan Motors
+            Chat with {{ settings.showroom_name }}
           </a>
           <NuxtLink
             to="/contact"
