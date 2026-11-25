@@ -11,6 +11,7 @@ function createMockRes() {
   const headers: Record<string, string> = {}
   const chunks: string[] = []
   let ended = false
+  let destroyedWith: Error | undefined
   return {
     res: {
       statusCode: 0,
@@ -24,10 +25,14 @@ function createMockRes() {
         if (chunk) chunks.push(chunk)
         ended = true
       },
+      destroy(error?: Error) {
+        destroyedWith = error ?? new Error('Destroyed')
+      },
     },
     headers,
     getBody: () => chunks.join(''),
     isEnded: () => ended,
+    getDestroyedError: () => destroyedWith,
   }
 }
 
@@ -135,4 +140,104 @@ test('fetchAndStreamSitemap returns 504 with no-store on timeout', async () => {
   assert.equal(mock.res.statusCode, 504)
   assert.equal(mock.headers['cache-control'], 'no-store, no-cache, must-revalidate')
   assert.equal(logged.some((m) => m.includes('timed out')), true)
+})
+
+test('fetchAndStreamSitemap destroys response on mid-stream error after partial car output', async () => {
+  const mock = createMockRes()
+  const logged: string[] = []
+  const encoder = new TextEncoder()
+
+  const failingStream = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(encoder.encode('[\n'))
+      controller.enqueue(encoder.encode('{"slug":"car-1","status":"available"},\n'))
+    },
+    pull(controller) {
+      controller.error(new Error('Upstream connection reset mid-stream'))
+    },
+  })
+
+  await fetchAndStreamSitemap({
+    apiBase: 'http://127.0.0.1:8000',
+    prefix: '/api/v1',
+    siteUrl: 'https://hassanmotors.pk',
+    res: mock.res,
+    fetchImpl: async () => new Response(failingStream, { status: 200 }),
+    logger: { error: (msg: unknown) => logged.push(String(msg)) },
+  })
+
+  assert.equal(mock.getBody().includes('https://hassanmotors.pk/cars/car-1'), true)
+  assert.equal(mock.getBody().includes('</urlset>'), false)
+  assert.equal(mock.isEnded(), false)
+  assert.equal(mock.getDestroyedError()?.message, 'Upstream connection reset mid-stream')
+  assert.equal(logged.some((m) => m.includes('Failed to stream cars')), true)
+})
+
+test('fetchAndStreamSitemap destroys response on timeout during body streaming', async () => {
+  const mock = createMockRes()
+  const logged: string[] = []
+  const encoder = new TextEncoder()
+
+  await fetchAndStreamSitemap({
+    apiBase: 'http://127.0.0.1:8000',
+    prefix: '/api/v1',
+    siteUrl: 'https://hassanmotors.pk',
+    timeoutMs: 30,
+    res: mock.res,
+    fetchImpl: async (_input, init) => {
+      let sentFirstChunk = false
+      const hangingStream = new ReadableStream<Uint8Array>({
+        pull(controller) {
+          if (!sentFirstChunk) {
+            sentFirstChunk = true
+            controller.enqueue(
+              encoder.encode('[\n{"slug":"car-first","status":"available"},\n')
+            )
+            return
+          }
+          return new Promise<void>((_resolve, reject) => {
+            init?.signal?.addEventListener('abort', () => {
+              const err = new Error('Aborted mid-stream')
+              err.name = 'AbortError'
+              controller.error(err)
+              reject(err)
+            })
+          })
+        },
+      })
+      return new Response(hangingStream, { status: 200 })
+    },
+    logger: { error: (msg: unknown) => logged.push(String(msg)) },
+  })
+
+  assert.equal(mock.getBody().includes('https://hassanmotors.pk/cars/car-first'), true)
+  assert.equal(mock.getBody().includes('</urlset>'), false)
+  assert.equal(mock.isEnded(), false)
+  assert.equal(mock.getDestroyedError()?.name, 'AbortError')
+  assert.equal(logged.some((m) => m.includes('timed out')), true)
+})
+
+test('fetchAndStreamSitemap produces complete valid XML on success', async () => {
+  const mock = createMockRes()
+
+  await fetchAndStreamSitemap({
+    apiBase: 'http://127.0.0.1:8000',
+    prefix: '/api/v1',
+    siteUrl: 'https://hassanmotors.pk',
+    res: mock.res,
+    fetchImpl: async () =>
+      new Response(
+        makeStream(['[\n{"slug":"toyota-corolla-2023","status":"available","lastmod":"2026-11-25"}\n]']),
+        { status: 200 }
+      ),
+  })
+
+  const body = mock.getBody()
+  assert.equal(mock.res.statusCode, 200)
+  assert.equal(mock.headers['content-type'], 'application/xml; charset=utf-8')
+  assert.equal(mock.isEnded(), true)
+  assert.equal(mock.getDestroyedError(), undefined)
+  assert.equal(body.startsWith('<?xml version="1.0" encoding="UTF-8"?>'), true)
+  assert.equal(body.includes('</urlset>'), true)
+  assert.equal(body.includes('https://hassanmotors.pk/cars/toyota-corolla-2023'), true)
 })

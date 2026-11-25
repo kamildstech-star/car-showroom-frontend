@@ -89,6 +89,7 @@ export interface SitemapResponseWriter {
   setHeader: (name: string, value: string) => void
   write: (chunk: string) => void
   end: (chunk?: string) => void
+  destroy?: (error?: Error) => void
 }
 
 export interface FetchAndStreamSitemapOptions {
@@ -171,6 +172,10 @@ export async function fetchAndStreamSitemap({
       res.setHeader('Content-Type', 'text/plain; charset=utf-8')
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
       res.end('Sitemap temporarily unavailable.')
+    } else if (typeof res.destroy === 'function') {
+      // Abort the chunked HTTP response without a terminating chunk or </urlset>
+      // so proxies, CDNs, and crawlers never cache an incomplete sitemap as complete.
+      res.destroy(err instanceof Error ? err : new Error(String(err)))
     } else {
       res.end()
     }
