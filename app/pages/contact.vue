@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const config = useRuntimeConfig()
 const siteUrl = (config.public.siteUrl as string) || 'https://hassanmotors.pk'
-const { settings, phoneTel, whatsappUrl, emailMailto } = useShowroom()
 
 useHead({
   link: [
@@ -63,7 +62,7 @@ const handleSubmit = async () => {
     }
   } catch (err: unknown) {
     const errorObj = err as { data?: { message?: string } }
-    errorMessage.value = errorObj.data?.message || `Failed to submit inquiry. Please call us directly at ${settings.value.showroom_phone}.`
+    errorMessage.value = errorObj.data?.message || 'Failed to submit inquiry. Please call us directly at +92 304 1142642.'
   } finally {
     loading.value = false
   }
@@ -195,12 +194,12 @@ const handleSubmit = async () => {
             Message us directly on WhatsApp for real-time video tours of cars, high-res photos, and immediate negotiation.
           </p>
           <a
-            :href="whatsappUrl"
+            href="https://wa.me/923041142642"
             target="_blank"
             rel="noopener noreferrer"
             class="inline-flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl text-xs font-bold bg-emerald-500 text-neutral-950 hover:bg-emerald-400 transition"
           >
-            Open WhatsApp ({{ settings.showroom_phone }})
+            Open WhatsApp (+92 304 1142642)
           </a>
         </div>
 
@@ -208,10 +207,11 @@ const handleSubmit = async () => {
         <div class="bg-neutral-900/80 border border-neutral-800 rounded-3xl p-6 sm:p-8 space-y-4">
           <h3 class="text-base font-bold text-white">Physical Location</h3>
           <div class="text-xs space-y-2 text-neutral-400">
-            <p><strong class="text-neutral-200">Dealership:</strong> {{ settings.showroom_name }}</p>
-            <p><strong class="text-neutral-200">Address:</strong> {{ settings.showroom_address }}</p>
+            <p><strong class="text-neutral-200">Dealership:</strong> Hassan Motors</p>
+            <p><strong class="text-neutral-200">Address:</strong> Main West Canal Road, Faisalabad, Punjab, Pakistan</p>
             <p><strong class="text-neutral-200">Showroom Hours:</strong></p>
-            <p class="text-neutral-300">{{ settings.opening_hours }}</p>
+            <p class="text-neutral-300">Monday &ndash; Saturday: 10:00 AM &ndash; 08:00 PM</p>
+            <p class="text-neutral-500">Sunday: Closed (Available on WhatsApp for urgent deals)</p>
           </div>
         </div>
 
@@ -219,14 +219,14 @@ const handleSubmit = async () => {
         <div class="bg-neutral-900/80 border border-neutral-800 rounded-3xl p-6 sm:p-8 space-y-3 text-xs">
           <div>
             <span class="block text-neutral-500 uppercase tracking-wider font-bold text-[10px]">Direct Hotline</span>
-            <a :href="phoneTel" class="text-base font-bold text-white hover:text-amber-400 transition">
-              {{ settings.showroom_phone }}
+            <a href="tel:+923041142642" class="text-base font-bold text-white hover:text-amber-400 transition">
+              +92 304 1142642
             </a>
           </div>
           <div class="pt-2 border-t border-neutral-800">
             <span class="block text-neutral-500 uppercase tracking-wider font-bold text-[10px]">Email Inquiries</span>
-            <a :href="emailMailto" class="text-sm font-semibold text-neutral-300 hover:text-white transition">
-              {{ settings.showroom_email }}
+            <a href="mailto:info@hassanmotors.pk" class="text-sm font-semibold text-neutral-300 hover:text-white transition">
+              info@hassanmotors.pk
             </a>
           </div>
         </div>

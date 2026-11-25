@@ -1,7 +1,3 @@
-<script setup lang="ts">
-const { settings, phoneTel, whatsappUrl } = useShowroom()
-</script>
-
 <template>
   <footer class="bg-neutral-950 border-t border-neutral-800 text-neutral-400">
     <!-- Top Footer -->
@@ -21,8 +17,8 @@ const { settings, phoneTel, whatsappUrl } = useShowroom()
             Faisalabad's trusted automotive dealership offering non-accidental luxury cars, verified family sedans, and transparent transactions with complete documentation.
           </p>
           <div class="text-xs space-y-1 text-neutral-400">
-            <p><strong class="text-neutral-300">Showroom:</strong> {{ settings.showroom_address }}</p>
-            <p><strong class="text-neutral-300">Timings:</strong> {{ settings.opening_hours }}</p>
+            <p><strong class="text-neutral-300">Showroom:</strong> Main West Canal Road, Faisalabad, Pakistan</p>
+            <p><strong class="text-neutral-300">Timings:</strong> Mon - Sat: 10:00 AM - 08:00 PM</p>
           </div>
         </div>
 
@@ -84,18 +80,18 @@ const { settings, phoneTel, whatsappUrl } = useShowroom()
           </p>
           <div class="space-y-2">
             <a
-              :href="whatsappUrl"
+              href="https://wa.me/923041142642"
               target="_blank"
               rel="noopener noreferrer"
               class="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-lg shadow-emerald-950/40"
             >
-              WhatsApp: {{ settings.showroom_phone }}
+              WhatsApp: +92 304 1142642
             </a>
             <a
-              :href="phoneTel"
+              href="tel:+923041142642"
               class="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-xs font-semibold bg-neutral-900 border border-neutral-800 text-neutral-300 hover:bg-neutral-800 transition"
             >
-              Call: {{ settings.showroom_phone }}
+              Call: +92 304 1142642
             </a>
           </div>
         </div>
@@ -106,7 +102,7 @@ const { settings, phoneTel, whatsappUrl } = useShowroom()
     <div class="border-t border-neutral-900 bg-neutral-950 py-6 px-4 sm:px-6 lg:px-8">
       <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-500 gap-3">
         <p>
-          &copy; {{ new Date().getFullYear() }} {{ settings.showroom_name }}. All rights reserved. {{ settings.showroom_city }}, Pakistan.
+          &copy; {{ new Date().getFullYear() }} Hassan Motors. All rights reserved. Faisalabad, Pakistan.
         </p>
         <div class="flex items-center space-x-4">
           <span class="inline-flex items-center gap-1.5 text-neutral-500">

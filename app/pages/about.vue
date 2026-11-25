@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const config = useRuntimeConfig()
 const siteUrl = (config.public.siteUrl as string) || 'https://hassanmotors.pk'
-const { settings, whatsappUrl } = useShowroom()
 
 useHead({
   link: [
@@ -31,7 +30,7 @@ useSeoMeta({
         Faisalabad's Destination for <span class="text-amber-500">Verified Automotive</span> Excellence
       </h1>
       <p class="text-base text-neutral-400 leading-relaxed">
-        Located at {{ settings.showroom_address }}, {{ settings.showroom_name }} was founded with a singular commitment: to provide car buyers with transparency, verified documentation, and inspected vehicles.
+        Located on Main West Canal Road in Faisalabad, Hassan Motors was founded with a singular commitment: to provide car buyers with 100% transparency, verified documentation, and guaranteed non-accidental vehicles.
       </p>
     </div>
 
@@ -82,15 +81,15 @@ useSeoMeta({
         </div>
 
         <div class="space-y-3 text-xs text-neutral-300">
-          <p><strong class="text-white">Physical Address:</strong> {{ settings.showroom_address }}</p>
-          <p><strong class="text-white">Showroom Timings:</strong> {{ settings.opening_hours }}</p>
-          <p><strong class="text-white">Official WhatsApp / Call:</strong> {{ settings.showroom_phone }}</p>
-          <p><strong class="text-white">Official Email:</strong> {{ settings.showroom_email }}</p>
+          <p><strong class="text-white">Physical Address:</strong> Main West Canal Road, Faisalabad, Punjab, Pakistan</p>
+          <p><strong class="text-white">Showroom Timings:</strong> Monday – Saturday: 10:00 AM – 08:00 PM (Sunday Closed)</p>
+          <p><strong class="text-white">Official WhatsApp / Call:</strong> +92 304 1142642</p>
+          <p><strong class="text-white">Official Email:</strong> info@hassanmotors.pk</p>
         </div>
 
         <div class="pt-2 flex flex-wrap gap-4">
           <a
-            :href="whatsappUrl"
+            href="https://wa.me/923041142642"
             target="_blank"
             rel="noopener noreferrer"
             class="px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white transition shadow-lg shadow-emerald-950/40"
