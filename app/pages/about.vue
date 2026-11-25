@@ -11,9 +11,9 @@ useHead({
 
 useSeoMeta({
   title: () => `About ${settings.value.showroom_name} | ${settings.value.showroom_city}’s Premier Car Dealership`,
-  description: () => `Learn about ${settings.value.showroom_name} in ${settings.value.showroom_city}. Established on principles of integrity, verified documentation, and luxury automotive standards on ${settings.value.showroom_address}.`,
+  description: () => `Learn about ${settings.value.showroom_name} in ${settings.value.showroom_city}. Focused on transparent dealings, documentation assistance, and quality pre-owned vehicles on ${settings.value.showroom_address}.`,
   ogTitle: () => `About ${settings.value.showroom_name} ${settings.value.showroom_city}`,
-  ogDescription: () => `Trusted car dealership in ${settings.value.showroom_city}, Pakistan. Non-accidental guarantee, 100% verified files.`,
+  ogDescription: () => `Car dealership in ${settings.value.showroom_city}, Pakistan. Transparent pricing and documentation assistance.`,
   ogUrl: `${siteUrl}/about`,
   ogType: 'website',
   twitterCard: 'summary_large_image',
@@ -28,10 +28,10 @@ useSeoMeta({
         About Our Showroom
       </div>
       <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-        {{ settings.showroom_city }}'s Destination for <span class="text-amber-500">Verified Automotive</span> Excellence
+        {{ settings.showroom_city }}'s Destination for <span class="text-amber-500">Quality Pre-Owned</span> Vehicles
       </h1>
       <p class="text-base text-neutral-400 leading-relaxed">
-        Located on {{ settings.showroom_address }} in {{ settings.showroom_city }}, {{ settings.showroom_name }} was founded with a singular commitment: to provide car buyers with 100% transparency, verified documentation, and guaranteed non-accidental vehicles.
+        Located on {{ settings.showroom_address }} in {{ settings.showroom_city }}, {{ settings.showroom_name }} is committed to transparent dealings, documentation support, and a straightforward car buying experience.
       </p>
     </div>
 
@@ -41,9 +41,9 @@ useSeoMeta({
         <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center text-xl font-bold">
           🛡️
         </div>
-        <h3 class="text-lg font-bold text-white">Non-Accidental Guarantee</h3>
+        <h3 class="text-lg font-bold text-white">In-Person Showroom Viewing</h3>
         <p class="text-xs text-neutral-400 leading-relaxed">
-          Every vehicle undergoes rigorous structural examination. We ensure all original factory seals, pillars, aprons, and chassis remain strictly intact with zero hidden accident history.
+          We welcome physical inspections and test drives at our showroom so you can evaluate each vehicle's condition firsthand before making a decision.
         </p>
       </div>
 
@@ -51,9 +51,9 @@ useSeoMeta({
         <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center text-xl font-bold">
           📄
         </div>
-        <h3 class="text-lg font-bold text-white">Complete Document Integrity</h3>
+        <h3 class="text-lg font-bold text-white">Documentation Assistance</h3>
         <p class="text-xs text-neutral-400 leading-relaxed">
-          We deal strictly in vehicles with verifiable ownership. Original return files, Punjab or Islamabad excise smart cards, biometric availability, and token tax clearances are fully inspected.
+          We assist buyers with reviewing available vehicle files, registration details, smart cards, and ownership transfer steps.
         </p>
       </div>
 
@@ -63,7 +63,7 @@ useSeoMeta({
         </div>
         <h3 class="text-lg font-bold text-white">Honest Deal Structuring</h3>
         <p class="text-xs text-neutral-400 leading-relaxed">
-          No broker gimmicks or hidden charges. Whether purchasing for your family or executing an upgrade through car exchange, our team delivers straight talk and fair market pricing.
+          Whether purchasing for your family or discussing a vehicle exchange, our team focuses on clear communication and fair market pricing.
         </p>
       </div>
     </div>
@@ -77,7 +77,7 @@ useSeoMeta({
             Visit Us on {{ settings.showroom_address }}
           </h2>
           <p class="text-xs sm:text-sm text-neutral-400 mt-2 leading-relaxed">
-            Our central location on {{ settings.showroom_address }} makes it convenient for families and enthusiasts across {{ settings.showroom_city }}, Chiniot, Jhang, and surrounding regions to visit, inspect, and test drive.
+            Our location on {{ settings.showroom_address }} makes it convenient for families and enthusiasts across {{ settings.showroom_city }} and surrounding areas to visit, inspect, and test drive.
           </p>
         </div>
 
@@ -111,19 +111,19 @@ useSeoMeta({
         <ul class="space-y-3 text-xs text-neutral-400">
           <li class="flex items-start gap-2">
             <span class="text-emerald-400 font-bold">✓</span>
-            <span>Comprehensive on-spot computer and scanner diagnostics allowed.</span>
+            <span>On-site physical inspection and test drives welcome.</span>
           </li>
           <li class="flex items-start gap-2">
             <span class="text-emerald-400 font-bold">✓</span>
-            <span>Instant vehicle documentation transfer facilitation.</span>
+            <span>Ownership transfer and documentation guidance.</span>
           </li>
           <li class="flex items-start gap-2">
             <span class="text-emerald-400 font-bold">✓</span>
-            <span>Accurate, genuine odometer readings recorded on purchase agreements.</span>
+            <span>Transparent vehicle pricing and clear communication.</span>
           </li>
           <li class="flex items-start gap-2">
             <span class="text-emerald-400 font-bold">✓</span>
-            <span>Transparent vehicle exchange with same-day settlement.</span>
+            <span>Trade-in and vehicle exchange evaluations available.</span>
           </li>
         </ul>
       </div>

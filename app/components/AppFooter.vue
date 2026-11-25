@@ -18,7 +18,7 @@ const { settings, phoneTel, whatsappUrl, fullAddress } = useShowroom()
             </span>
           </div>
           <p class="text-xs leading-relaxed text-neutral-400">
-            {{ settings.showroom_city }}'s trusted automotive dealership offering non-accidental luxury cars, verified family sedans, and transparent transactions with complete documentation.
+            {{ settings.showroom_city }}-based automotive dealership offering pre-owned luxury cars and family sedans with transparent dealings and documentation assistance.
           </p>
           <div class="text-xs space-y-1 text-neutral-400">
             <p><strong class="text-neutral-300">Showroom:</strong> {{ fullAddress }}</p>
@@ -110,7 +110,7 @@ const { settings, phoneTel, whatsappUrl, fullAddress } = useShowroom()
         </p>
         <div class="flex items-center space-x-4">
           <span class="inline-flex items-center gap-1.5 text-neutral-500">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Verified Showroom
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Direct Showroom Inquiries
           </span>
           <NuxtLink
             to="/admin/login"

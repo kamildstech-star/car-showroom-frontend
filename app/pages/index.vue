@@ -3,50 +3,47 @@ import type { CarListItem } from '~/types/car'
 
 const config = useRuntimeConfig()
 const siteUrl = ((config.public.siteUrl as string) || 'https://hassanmotors.pk').replace(/\/$/, '')
-const { settings, whatsappUrl } = useShowroom()
+const { settings, whatsappUrl, openingHoursSpec } = useShowroom()
 
-useHead(() => ({
-  link: [
-    { rel: 'canonical', href: `${siteUrl}/` },
-  ],
-  script: [
-    {
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'AutoDealer',
-        '@id': `${siteUrl}/#dealer`,
-        name: settings.value.showroom_name,
-        image: `${siteUrl}/images/showroom.jpg`,
-        telephone: settings.value.showroom_phone,
-        email: settings.value.showroom_email,
-        url: siteUrl,
-        address: {
-          '@type': 'PostalAddress',
-          streetAddress: settings.value.showroom_address,
-          addressLocality: settings.value.showroom_city,
-          addressRegion: 'Punjab',
-          addressCountry: 'PK',
-        },
-        openingHoursSpecification: [
-          {
-            '@type': 'OpeningHoursSpecification',
-            dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-            opens: '10:00',
-            closes: '20:00',
-          },
-        ],
-        priceRange: 'PKR 1,000,000 - 50,000,000',
-      }),
+useHead(() => {
+  const dealerSchema: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'AutoDealer',
+    '@id': `${siteUrl}/#dealer`,
+    name: settings.value.showroom_name,
+    telephone: settings.value.showroom_phone,
+    email: settings.value.showroom_email,
+    url: siteUrl,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: settings.value.showroom_address,
+      addressLocality: settings.value.showroom_city,
+      addressCountry: 'PK',
     },
-  ],
-}))
+  }
+
+  if (openingHoursSpec.value) {
+    dealerSchema.openingHoursSpecification = openingHoursSpec.value
+  }
+
+  return {
+    link: [
+      { rel: 'canonical', href: `${siteUrl}/` },
+    ],
+    script: [
+      {
+        type: 'application/ld+json',
+        innerHTML: JSON.stringify(dealerSchema),
+      },
+    ],
+  }
+})
 
 useSeoMeta({
-  title: () => `${settings.value.showroom_name} | Premium & Verified Car Showroom in ${settings.value.showroom_city}`,
-  description: () => `Discover certified luxury cars, sedans, and SUVs in ${settings.value.showroom_city}, Pakistan. Verified documentation, transparent pricing, and instant WhatsApp support at ${settings.value.showroom_name}.`,
-  ogTitle: () => `${settings.value.showroom_name} ${settings.value.showroom_city} - Luxury & Verified Car Showroom`,
-  ogDescription: 'Non-accidental certified vehicles, transparent pricing, and instant WhatsApp inquiries.',
+  title: () => `${settings.value.showroom_name} | Pre-Owned & Luxury Car Showroom in ${settings.value.showroom_city}`,
+  description: () => `Explore pre-owned luxury cars, sedans, and SUVs in ${settings.value.showroom_city}, Pakistan. Transparent pricing and direct WhatsApp support at ${settings.value.showroom_name}.`,
+  ogTitle: () => `${settings.value.showroom_name} ${settings.value.showroom_city} - Pre-Owned & Luxury Car Showroom`,
+  ogDescription: 'Pre-owned vehicles, transparent pricing, and direct WhatsApp inquiries.',
   ogUrl: `${siteUrl}/`,
   ogType: 'website',
   twitterCard: 'summary_large_image',
@@ -96,11 +93,11 @@ const handleQuickSearch = () => {
           </div>
 
           <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-white leading-tight">
-            Elevate Your Drive With <span class="text-amber-500">Verified Luxury</span> & Family Cars
+            Elevate Your Drive With <span class="text-amber-500">Quality Luxury</span> & Family Cars
           </h1>
 
           <p class="text-base sm:text-lg text-neutral-400 max-w-2xl mx-auto leading-relaxed">
-            Every vehicle at {{ settings.showroom_name }} is thoroughly inspected, document-cleared, and presented with genuine mileage. Transparent deals on {{ settings.showroom_address }}, {{ settings.showroom_city }}.
+            Browse our curated selection of pre-owned vehicles at {{ settings.showroom_name }}. Transparent dealings at {{ settings.showroom_address }}, {{ settings.showroom_city }}.
           </p>
 
           <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
@@ -191,12 +188,12 @@ const handleQuickSearch = () => {
         <!-- Trust Metrics -->
         <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           <div class="p-4 bg-neutral-900/40 rounded-2xl border border-neutral-800/60">
-            <div class="text-2xl sm:text-3xl font-black text-white">100%</div>
-            <div class="text-xs text-neutral-400 mt-1 uppercase font-semibold">Document Verified</div>
+            <div class="text-2xl sm:text-3xl font-black text-white">In-Person</div>
+            <div class="text-xs text-neutral-400 mt-1 uppercase font-semibold">Showroom Viewing</div>
           </div>
           <div class="p-4 bg-neutral-900/40 rounded-2xl border border-neutral-800/60">
-            <div class="text-2xl sm:text-3xl font-black text-amber-500">Non-Accidental</div>
-            <div class="text-xs text-neutral-400 mt-1 uppercase font-semibold">Physical Inspection</div>
+            <div class="text-2xl sm:text-3xl font-black text-amber-500">Transparent</div>
+            <div class="text-xs text-neutral-400 mt-1 uppercase font-semibold">Deal Structuring</div>
           </div>
           <div class="p-4 bg-neutral-900/40 rounded-2xl border border-neutral-800/60">
             <div class="text-2xl sm:text-3xl font-black text-white">{{ settings.showroom_phone }}</div>
@@ -247,10 +244,10 @@ const handleQuickSearch = () => {
             Fresh Inventory
           </div>
           <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Latest Arrivals in Faisalabad
+            Latest Arrivals in {{ settings.showroom_city }}
           </h2>
           <p class="text-xs text-neutral-400 mt-1">
-            Recently acquired verified vehicles ready for test drive on Canal Road.
+            Recently added vehicles available for viewing and test drive at {{ settings.showroom_address }}.
           </p>
         </div>
 
@@ -277,13 +274,13 @@ const handleQuickSearch = () => {
       <div class="bg-gradient-to-br from-neutral-900 to-neutral-950 border border-neutral-800 rounded-3xl p-8 sm:p-12">
         <div class="max-w-2xl mb-10">
           <div class="text-xs uppercase font-bold text-amber-500 tracking-wider">
-            Why Faisalabad Trusts Us
+            Why Customers Choose Us
           </div>
           <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            The Hassan Motors Standard
+            The {{ settings.showroom_name }} Standard
           </h2>
           <p class="text-xs text-neutral-400 mt-2 leading-relaxed">
-            Buying a pre-owned car should be exciting and secure. We eliminate uncertainty with our strict quality gates and transparent deal structuring.
+            Buying a pre-owned car should be straightforward and transparent. We focus on clear communication and honest deal structuring.
           </p>
         </div>
 
@@ -292,9 +289,9 @@ const handleQuickSearch = () => {
             <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center font-bold text-lg">
               1
             </div>
-            <h3 class="text-base font-bold text-white">Genuine Mileage & Clear History</h3>
+            <h3 class="text-base font-bold text-white">Detailed Vehicle Listings</h3>
             <p class="text-xs text-neutral-400 leading-relaxed">
-              We reject meter-reversed or structurally compromised cars. What you see is genuine, verified, and documented.
+              Clear specifications, condition notes, and transparent pricing so you know what to expect before visiting the showroom.
             </p>
           </div>
 
@@ -302,9 +299,9 @@ const handleQuickSearch = () => {
             <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center font-bold text-lg">
               2
             </div>
-            <h3 class="text-base font-bold text-white">100% Biometric & File Verification</h3>
+            <h3 class="text-base font-bold text-white">Documentation & Transfer Support</h3>
             <p class="text-xs text-neutral-400 leading-relaxed">
-              Complete verification with Punjab Excise, original return files, smart cards, and on-spot biometric facilitation.
+              Guidance with vehicle files, smart cards, and ownership transfer procedures during your purchase.
             </p>
           </div>
 
@@ -314,7 +311,7 @@ const handleQuickSearch = () => {
             </div>
             <h3 class="text-base font-bold text-white">Fair Pricing & Exchange Options</h3>
             <p class="text-xs text-neutral-400 leading-relaxed">
-              Competitive market demands with zero hidden costs. Trade in your existing vehicle with honest evaluation.
+              Competitive market pricing with straightforward trade-in evaluations for your existing vehicle.
             </p>
           </div>
         </div>
