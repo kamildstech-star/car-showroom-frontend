@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
 const mobileMenuOpen = ref(false)
+const { settings, phoneTel, whatsappUrl } = useShowroom()
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -25,12 +26,11 @@ watch(() => route.path, () => {
             HM
           </div>
           <div>
-            <div class="text-xl font-black tracking-wider text-white flex items-center gap-1.5">
-              <span>HASSAN</span>
-              <span class="text-amber-500">MOTORS</span>
+            <div class="text-xl font-black tracking-wider text-white flex items-center gap-1.5 uppercase">
+              <span>{{ settings.showroom_name }}</span>
             </div>
             <p class="text-[10px] tracking-widest uppercase text-neutral-400 font-medium">
-              Faisalabad, Pakistan
+              {{ settings.showroom_city }}, Pakistan
             </p>
           </div>
         </NuxtLink>
@@ -51,13 +51,13 @@ watch(() => route.path, () => {
         <!-- Right Quick Actions -->
         <div class="hidden md:flex items-center space-x-4">
           <a
-            href="https://wa.me/923041142642"
+            :href="whatsappUrl"
             target="_blank"
             rel="noopener noreferrer"
             class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 transition-all shadow-sm"
           >
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>+92 304 1142642</span>
+            <span>{{ settings.showroom_phone }}</span>
           </a>
 
           <NuxtLink
@@ -71,7 +71,7 @@ watch(() => route.path, () => {
         <!-- Mobile Hamburger Button -->
         <div class="flex md:hidden items-center space-x-2">
           <a
-            href="https://wa.me/923041142642"
+            :href="whatsappUrl"
             target="_blank"
             rel="noopener noreferrer"
             class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold"
@@ -115,13 +115,13 @@ watch(() => route.path, () => {
 
       <div class="pt-4 border-t border-neutral-800 space-y-2">
         <a
-          href="tel:+923041142642"
+          :href="phoneTel"
           class="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-neutral-900 border border-neutral-800 text-neutral-200"
         >
-          Call Showroom: +92 304 1142642
+          Call Showroom: {{ settings.showroom_phone }}
         </a>
         <a
-          href="https://wa.me/923041142642"
+          :href="whatsappUrl"
           target="_blank"
           rel="noopener noreferrer"
           class="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white"

@@ -1,3 +1,7 @@
+<script setup lang="ts">
+const { settings, phoneTel, whatsappUrl, fullAddress } = useShowroom()
+</script>
+
 <template>
   <footer class="bg-neutral-950 border-t border-neutral-800 text-neutral-400">
     <!-- Top Footer -->
@@ -9,16 +13,16 @@
             <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center font-black text-neutral-950 text-sm">
               HM
             </div>
-            <span class="text-lg font-black tracking-wider text-white">
-              HASSAN <span class="text-amber-500">MOTORS</span>
+            <span class="text-lg font-black tracking-wider text-white uppercase">
+              {{ settings.showroom_name }}
             </span>
           </div>
           <p class="text-xs leading-relaxed text-neutral-400">
-            Faisalabad's trusted automotive dealership offering non-accidental luxury cars, verified family sedans, and transparent transactions with complete documentation.
+            {{ settings.showroom_city }}'s trusted automotive dealership offering non-accidental luxury cars, verified family sedans, and transparent transactions with complete documentation.
           </p>
           <div class="text-xs space-y-1 text-neutral-400">
-            <p><strong class="text-neutral-300">Showroom:</strong> Main West Canal Road, Faisalabad, Pakistan</p>
-            <p><strong class="text-neutral-300">Timings:</strong> Mon - Sat: 10:00 AM - 08:00 PM</p>
+            <p><strong class="text-neutral-300">Showroom:</strong> {{ fullAddress }}</p>
+            <p><strong class="text-neutral-300">Timings:</strong> {{ settings.opening_hours }}</p>
           </div>
         </div>
 
@@ -80,18 +84,18 @@
           </p>
           <div class="space-y-2">
             <a
-              href="https://wa.me/923041142642"
+              :href="whatsappUrl"
               target="_blank"
               rel="noopener noreferrer"
               class="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-lg shadow-emerald-950/40"
             >
-              WhatsApp: +92 304 1142642
+              WhatsApp: {{ settings.showroom_phone }}
             </a>
             <a
-              href="tel:+923041142642"
+              :href="phoneTel"
               class="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-xs font-semibold bg-neutral-900 border border-neutral-800 text-neutral-300 hover:bg-neutral-800 transition"
             >
-              Call: +92 304 1142642
+              Call: {{ settings.showroom_phone }}
             </a>
           </div>
         </div>
@@ -102,7 +106,7 @@
     <div class="border-t border-neutral-900 bg-neutral-950 py-6 px-4 sm:px-6 lg:px-8">
       <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-500 gap-3">
         <p>
-          &copy; {{ new Date().getFullYear() }} Hassan Motors. All rights reserved. Faisalabad, Pakistan.
+          &copy; {{ new Date().getFullYear() }} {{ settings.showroom_name }}. All rights reserved. {{ settings.showroom_city }}, Pakistan.
         </p>
         <div class="flex items-center space-x-4">
           <span class="inline-flex items-center gap-1.5 text-neutral-500">

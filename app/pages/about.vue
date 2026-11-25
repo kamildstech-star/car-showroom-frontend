@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const config = useRuntimeConfig()
 const siteUrl = (config.public.siteUrl as string) || 'https://hassanmotors.pk'
+const { settings, whatsappUrl, fullAddress } = useShowroom()
 
 useHead({
   link: [
@@ -9,10 +10,10 @@ useHead({
 })
 
 useSeoMeta({
-  title: 'About Hassan Motors | Faisalabad’s Premier Car Dealership',
-  description: 'Learn about Hassan Motors in Faisalabad. Established on principles of integrity, verified documentation, and luxury automotive standards on Main West Canal Road.',
-  ogTitle: 'About Hassan Motors Faisalabad',
-  ogDescription: 'Trusted car dealership in Faisalabad, Pakistan. Non-accidental guarantee, 100% verified files.',
+  title: () => `About ${settings.value.showroom_name} | ${settings.value.showroom_city}’s Premier Car Dealership`,
+  description: () => `Learn about ${settings.value.showroom_name} in ${settings.value.showroom_city}. Established on principles of integrity, verified documentation, and luxury automotive standards on ${settings.value.showroom_address}.`,
+  ogTitle: () => `About ${settings.value.showroom_name} ${settings.value.showroom_city}`,
+  ogDescription: () => `Trusted car dealership in ${settings.value.showroom_city}, Pakistan. Non-accidental guarantee, 100% verified files.`,
   ogUrl: `${siteUrl}/about`,
   ogType: 'website',
   twitterCard: 'summary_large_image',
@@ -27,10 +28,10 @@ useSeoMeta({
         About Our Showroom
       </div>
       <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-        Faisalabad's Destination for <span class="text-amber-500">Verified Automotive</span> Excellence
+        {{ settings.showroom_city }}'s Destination for <span class="text-amber-500">Verified Automotive</span> Excellence
       </h1>
       <p class="text-base text-neutral-400 leading-relaxed">
-        Located on Main West Canal Road in Faisalabad, Hassan Motors was founded with a singular commitment: to provide car buyers with 100% transparency, verified documentation, and guaranteed non-accidental vehicles.
+        Located on {{ settings.showroom_address }} in {{ settings.showroom_city }}, {{ settings.showroom_name }} was founded with a singular commitment: to provide car buyers with 100% transparency, verified documentation, and guaranteed non-accidental vehicles.
       </p>
     </div>
 
@@ -73,23 +74,23 @@ useSeoMeta({
         <div>
           <span class="text-xs font-bold uppercase tracking-wider text-amber-500">Showroom Presence</span>
           <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">
-            Visit Us on Main West Canal Road
+            Visit Us on {{ settings.showroom_address }}
           </h2>
           <p class="text-xs sm:text-sm text-neutral-400 mt-2 leading-relaxed">
-            Our central location on West Canal Road makes it convenient for families and enthusiasts across Faisalabad, Chiniot, Jhang, and surrounding regions to visit, inspect, and test drive.
+            Our central location on {{ settings.showroom_address }} makes it convenient for families and enthusiasts across {{ settings.showroom_city }}, Chiniot, Jhang, and surrounding regions to visit, inspect, and test drive.
           </p>
         </div>
 
         <div class="space-y-3 text-xs text-neutral-300">
-          <p><strong class="text-white">Physical Address:</strong> Main West Canal Road, Faisalabad, Punjab, Pakistan</p>
-          <p><strong class="text-white">Showroom Timings:</strong> Monday – Saturday: 10:00 AM – 08:00 PM (Sunday Closed)</p>
-          <p><strong class="text-white">Official WhatsApp / Call:</strong> +92 304 1142642</p>
-          <p><strong class="text-white">Official Email:</strong> info@hassanmotors.pk</p>
+          <p><strong class="text-white">Physical Address:</strong> {{ fullAddress }}</p>
+          <p><strong class="text-white">Showroom Timings:</strong> {{ settings.opening_hours }}</p>
+          <p><strong class="text-white">Official WhatsApp / Call:</strong> {{ settings.showroom_phone }}</p>
+          <p><strong class="text-white">Official Email:</strong> {{ settings.showroom_email }}</p>
         </div>
 
         <div class="pt-2 flex flex-wrap gap-4">
           <a
-            href="https://wa.me/923041142642"
+            :href="whatsappUrl"
             target="_blank"
             rel="noopener noreferrer"
             class="px-6 py-3 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white transition shadow-lg shadow-emerald-950/40"
