@@ -241,3 +241,47 @@ test('fetchAndStreamSitemap produces complete valid XML on success', async () =>
   assert.equal(body.includes('</urlset>'), true)
   assert.equal(body.includes('https://hassanmotors.pk/cars/toyota-corolla-2023'), true)
 })
+
+test('fetchAndStreamSitemap rethrows instead of calling res.end() when destroy is unavailable', async () => {
+  const chunks: string[] = []
+  let ended = false
+  const logged: string[] = []
+  const encoder = new TextEncoder()
+
+  const resWithoutDestroy = {
+    statusCode: 0,
+    setHeader() {},
+    write(chunk: string) {
+      chunks.push(chunk)
+    },
+    end() {
+      ended = true
+    },
+  }
+
+  const failingStream = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(encoder.encode('[\n{"slug":"car-1","status":"available"},\n'))
+    },
+    pull(controller) {
+      controller.error(new Error('Stream dropped'))
+    },
+  })
+
+  await assert.rejects(
+    () =>
+      fetchAndStreamSitemap({
+        apiBase: 'http://127.0.0.1:8000',
+        prefix: '/api/v1',
+        siteUrl: 'https://hassanmotors.pk',
+        res: resWithoutDestroy,
+        fetchImpl: async () => new Response(failingStream, { status: 200 }),
+        logger: { error: (msg: unknown) => logged.push(String(msg)) },
+      }),
+    /Stream dropped/
+  )
+
+  assert.equal(ended, false)
+  assert.equal(chunks.join('').includes('</urlset>'), false)
+  assert.equal(logged.some((m) => m.includes('destroy unavailable')), true)
+})

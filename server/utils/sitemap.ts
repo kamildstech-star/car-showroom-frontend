@@ -90,6 +90,7 @@ export interface SitemapResponseWriter {
   write: (chunk: string) => void
   end: (chunk?: string) => void
   destroy?: (error?: Error) => void
+  socket?: { destroy?: (error?: Error) => void } | null
 }
 
 export interface FetchAndStreamSitemapOptions {
@@ -172,12 +173,20 @@ export async function fetchAndStreamSitemap({
       res.setHeader('Content-Type', 'text/plain; charset=utf-8')
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
       res.end('Sitemap temporarily unavailable.')
-    } else if (typeof res.destroy === 'function') {
-      // Abort the chunked HTTP response without a terminating chunk or </urlset>
-      // so proxies, CDNs, and crawlers never cache an incomplete sitemap as complete.
-      res.destroy(err instanceof Error ? err : new Error(String(err)))
     } else {
-      res.end()
+      const streamError = err instanceof Error ? err : new Error(String(err))
+      if (typeof res.destroy === 'function') {
+        // Abort the chunked HTTP response without a terminating chunk or </urlset>
+        // so proxies, CDNs, and crawlers never cache an incomplete sitemap as complete.
+        res.destroy(streamError)
+      } else if (typeof res.socket?.destroy === 'function') {
+        res.socket.destroy(streamError)
+      } else {
+        // Never silently call res.end() on an incomplete sitemap; rethrow so the
+        // server runtime aborts the response rather than signaling a valid EOF.
+        logger.error('[Sitemap] Response destroy unavailable; rethrowing stream error')
+        throw streamError
+      }
     }
   } finally {
     clearTimeout(timer)
