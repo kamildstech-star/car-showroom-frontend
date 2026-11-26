@@ -125,6 +125,24 @@ export function buildCarJsonLd(
   }
 }
 
+export function getVehicleViewingNotice(
+  status: 'available' | 'sold' | string,
+  showroomName: string,
+  fullAddress: string
+): { title: string; body: string } {
+  if (status === 'sold') {
+    return {
+      title: 'Looking for a Similar Vehicle?',
+      body: `This vehicle is no longer available for viewing. Contact ${showroomName} or browse our available inventory for similar options.`,
+    }
+  }
+
+  return {
+    title: 'Showroom Viewing',
+    body: `Visit ${showroomName} at ${fullAddress} to view this vehicle in person during showroom hours.`,
+  }
+}
+
 export function buildBreadcrumbJsonLd(
   carTitle: string,
   canonicalUrl: string,

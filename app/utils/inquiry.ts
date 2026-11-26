@@ -34,3 +34,17 @@ export function buildLeadInquiryPayload(
     website: form.website || undefined,
   }
 }
+
+export function getInquirySuccessMessage(
+  car: CarDetail | CarListItem | null | undefined
+): string {
+  if (car && car.status === 'sold') {
+    return 'Your inquiry for similar available vehicles has been recorded in our showroom system and WhatsApp has been launched with your inquiry message.'
+  }
+
+  if (car) {
+    return 'Your inquiry has been recorded in our showroom system and WhatsApp has been launched with your vehicle details pre-filled.'
+  }
+
+  return 'Your inquiry has been recorded in our showroom system and WhatsApp has been launched.'
+}

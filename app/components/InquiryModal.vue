@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CarDetail, CarListItem } from '~/types/car'
-import { buildLeadInquiryPayload } from '~/utils/inquiry'
+import { buildLeadInquiryPayload, getInquirySuccessMessage } from '~/utils/inquiry'
 
 const props = defineProps<{
   modelValue: boolean
@@ -14,6 +14,7 @@ const emit = defineEmits<{
 const { submitLead, trackWhatsAppClick } = useCars()
 const { settings } = useShowroom()
 const isSoldCar = computed(() => props.car?.status === 'sold')
+const successMessageText = computed(() => getInquirySuccessMessage(props.car))
 
 const form = reactive({
   customer_name: '',
@@ -99,7 +100,7 @@ const handleSubmit = async () => {
         </div>
         <h3 class="text-xl font-bold text-white">Inquiry Saved!</h3>
         <p class="text-xs text-neutral-400 leading-relaxed max-w-sm mx-auto">
-          Your inquiry has been recorded in our showroom system and WhatsApp has been launched with your vehicle details pre-filled.
+          {{ successMessageText }}
         </p>
 
         <div class="pt-4 space-y-3">

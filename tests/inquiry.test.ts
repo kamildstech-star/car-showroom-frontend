@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { buildLeadInquiryPayload } from '../app/utils/inquiry.ts'
+import { buildLeadInquiryPayload, getInquirySuccessMessage } from '../app/utils/inquiry.ts'
 import type { CarDetail } from '../app/types/car.ts'
 
 const baseCar: CarDetail = {
@@ -64,4 +64,17 @@ test('buildLeadInquiryPayload omits sold car_id and clarifies inquiry is for sim
     withCustomMessage.message,
     'Looking for available alternatives similar to the sold 2021 Changan Alsvin 1.5 DCT Lumiere: Anything in white under 4M?'
   )
+})
+
+test('getInquirySuccessMessage returns distinct conditional messages for available, sold, and general inquiries', () => {
+  const soldCar: CarDetail = { ...baseCar, status: 'sold' }
+
+  const availMsg = getInquirySuccessMessage(baseCar)
+  const soldMsg = getInquirySuccessMessage(soldCar)
+  const generalMsg = getInquirySuccessMessage(null)
+
+  assert.equal(availMsg.includes('vehicle details pre-filled'), true)
+  assert.equal(soldMsg.includes('similar available vehicles'), true)
+  assert.equal(soldMsg.includes('vehicle details pre-filled'), false)
+  assert.equal(generalMsg.includes('WhatsApp has been launched.'), true)
 })

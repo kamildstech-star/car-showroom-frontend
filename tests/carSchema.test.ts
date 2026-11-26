@@ -4,6 +4,7 @@ import {
   buildBreadcrumbJsonLd,
   buildCarJsonLd,
   buildFactualCarDescription,
+  getVehicleViewingNotice,
 } from '../app/utils/carDescription.ts'
 import type { CarDetail } from '../app/types/car.ts'
 
@@ -162,4 +163,17 @@ test('buildBreadcrumbJsonLd generates 3-level BreadcrumbList', () => {
   assert.equal(bc.itemListElement.length, 3)
   assert.equal(bc.itemListElement[1]?.item, 'https://hassanmotors.pk/cars')
   assert.equal(bc.itemListElement[2]?.name, '2021 Honda Civic VTi Oriel')
+})
+
+test('getVehicleViewingNotice differentiates available viewing from sold alternative notice without inspection claims', () => {
+  const availNotice = getVehicleViewingNotice('available', 'Hassan Motors', 'Main West Canal Road, Faisalabad, Pakistan')
+  const soldNotice = getVehicleViewingNotice('sold', 'Hassan Motors', 'Main West Canal Road, Faisalabad, Pakistan')
+
+  assert.equal(availNotice.title, 'Showroom Viewing')
+  assert.equal(availNotice.body.includes('view this vehicle in person'), true)
+  assert.equal(/inspection/i.test(availNotice.body), false)
+
+  assert.equal(soldNotice.title, 'Looking for a Similar Vehicle?')
+  assert.equal(soldNotice.body.includes('no longer available for viewing'), true)
+  assert.equal(soldNotice.body.includes('view this vehicle in person'), false)
 })

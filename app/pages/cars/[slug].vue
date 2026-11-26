@@ -4,6 +4,7 @@ import {
   buildBreadcrumbJsonLd,
   buildCarJsonLd,
   buildFactualCarDescription,
+  getVehicleViewingNotice,
 } from '~/utils/carDescription'
 
 const route = useRoute()
@@ -34,6 +35,10 @@ const displayDescription = computed(() => {
   const raw = car.value.description?.trim()
   return raw || buildFactualCarDescription(car.value, settings.value)
 })
+
+const viewingNotice = computed(() =>
+  getVehicleViewingNotice(car.value.status, settings.value.showroom_name, fullAddress.value)
+)
 
 useHead(() => ({
   link: [
@@ -211,15 +216,15 @@ const inquiryModalOpen = ref(false)
           </div>
         </div>
 
-        <!-- Showroom Viewing Notice -->
+        <!-- Showroom Viewing / Sold Alternative Notice -->
         <div class="bg-neutral-950 border border-neutral-800 rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6">
           <div class="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 flex-shrink-0 flex items-center justify-center text-2xl font-bold">
-            ✓
+            {{ car.status === 'sold' ? 'ℹ' : '✓' }}
           </div>
           <div class="space-y-1 text-center sm:text-left">
-            <h3 class="text-base font-bold text-white">In-Person Viewing Welcome</h3>
+            <h3 class="text-base font-bold text-white">{{ viewingNotice.title }}</h3>
             <p class="text-xs text-neutral-400 leading-relaxed">
-              Visit {{ settings.showroom_name }} at {{ fullAddress }} to inspect the vehicle and review available records in person.
+              {{ viewingNotice.body }}
             </p>
           </div>
         </div>
@@ -286,7 +291,7 @@ const inquiryModalOpen = ref(false)
           </div>
 
           <!-- Showroom Highlights -->
-          <div class="pt-6 border-t border-neutral-800 space-y-3 text-xs text-neutral-400">
+          <div v-if="car.status === 'available'" class="pt-6 border-t border-neutral-800 space-y-3 text-xs text-neutral-400">
             <div class="flex items-center gap-2.5">
               <span class="text-amber-500 font-bold">✓</span>
               <span>Physical showroom viewing available</span>
@@ -297,7 +302,21 @@ const inquiryModalOpen = ref(false)
             </div>
             <div class="flex items-center gap-2.5">
               <span class="text-amber-500 font-bold">✓</span>
-              <span>In-person inspection available during showroom hours</span>
+              <span>Located at {{ settings.showroom_address }}, {{ settings.showroom_city }}</span>
+            </div>
+          </div>
+          <div v-else class="pt-6 border-t border-neutral-800 space-y-3 text-xs text-neutral-400">
+            <div class="flex items-center gap-2.5">
+              <span class="text-rose-400 font-bold">•</span>
+              <span>This vehicle has been marked as sold</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="text-amber-500 font-bold">✓</span>
+              <span>Inquiries are routed for similar available vehicles</span>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <span class="text-amber-500 font-bold">✓</span>
+              <span>Direct communication with showroom staff</span>
             </div>
           </div>
         </div>
