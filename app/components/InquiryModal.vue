@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CarDetail, CarListItem } from '~/types/car'
+import { buildLeadInquiryPayload } from '~/utils/inquiry'
 
 const props = defineProps<{
   modelValue: boolean
@@ -11,6 +12,8 @@ const emit = defineEmits<{
 }>()
 
 const { submitLead, trackWhatsAppClick } = useCars()
+const { settings } = useShowroom()
+const isSoldCar = computed(() => props.car?.status === 'sold')
 
 const form = reactive({
   customer_name: '',
@@ -46,13 +49,8 @@ const handleSubmit = async () => {
   loading.value = true
 
   try {
-    const res = await submitLead({
-      customer_name: form.customer_name,
-      phone: form.phone,
-      message: form.message || undefined,
-      car_id: props.car ? props.car.id : null,
-      website: form.website || undefined,
-    })
+    const payload = buildLeadInquiryPayload(props.car, form)
+    const res = await submitLead(payload)
 
     if (res.data) {
       successResult.value = res.data
@@ -127,23 +125,33 @@ const handleSubmit = async () => {
       <div v-else class="space-y-5">
         <div>
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-2">
-            Hassan Motors Faisalabad
+            {{ settings.showroom_name }} {{ settings.showroom_city }}
           </div>
           <h3 class="text-xl font-bold text-white">
-            {{ car ? `Inquire About ${car.title}` : 'Contact Showroom' }}
+            <template v-if="isSoldCar">Ask About Similar Available Cars</template>
+            <template v-else-if="car">Inquire About {{ car.title }}</template>
+            <template v-else>Contact Showroom</template>
           </h3>
           <p class="text-xs text-neutral-400 mt-1">
-            Fill in your details below. We save your inquiry securely and connect you directly to our WhatsApp representative.
+            <template v-if="isSoldCar">
+              {{ car?.title }} is sold. Share your preferences below and we will connect you on WhatsApp regarding similar available inventory.
+            </template>
+            <template v-else>
+              Fill in your details below. We save your inquiry securely and connect you directly to our WhatsApp representative.
+            </template>
           </p>
         </div>
 
-        <!-- Vehicle Context Tag if car selected -->
-        <div v-if="car" class="bg-neutral-950 p-3 rounded-xl border border-neutral-800 flex items-center justify-between text-xs">
+        <!-- Vehicle Context Tag if available car selected -->
+        <div v-if="car && !isSoldCar" class="bg-neutral-950 p-3 rounded-xl border border-neutral-800 flex items-center justify-between text-xs">
           <div>
             <span class="block font-bold text-neutral-200">{{ car.title }}</span>
             <span class="text-neutral-500">{{ car.year }} &middot; {{ car.transmission }} &middot; {{ car.fuel_type }}</span>
           </div>
           <span class="text-amber-500 font-bold">{{ car.price_formatted }}</span>
+        </div>
+        <div v-else-if="car && isSoldCar" class="bg-rose-950/30 p-3 rounded-xl border border-rose-500/30 text-xs text-rose-200">
+          Reference: <strong>{{ car.title }}</strong> (Sold) &mdash; Inquiry will be sent for similar available vehicles.
         </div>
 
         <!-- Error alert -->
@@ -210,7 +218,7 @@ const handleSubmit = async () => {
           </button>
 
           <p class="text-[10px] text-center text-neutral-500">
-            Showroom Hotline: +92 304 1142642 &middot; We never share your contact details.
+            Showroom Hotline: {{ settings.showroom_phone }} &middot; We never share your contact details.
           </p>
         </form>
       </div>

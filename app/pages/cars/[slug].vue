@@ -297,7 +297,7 @@ const inquiryModalOpen = ref(false)
             </div>
             <div class="flex items-center gap-2.5">
               <span class="text-amber-500 font-bold">✓</span>
-              <span>Trade-in and exchange inquiries welcome</span>
+              <span>In-person inspection available during showroom hours</span>
             </div>
           </div>
         </div>

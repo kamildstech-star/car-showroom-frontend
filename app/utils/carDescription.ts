@@ -13,11 +13,18 @@ export function buildFactualCarDescription(
 ): string {
   const locationParts = [showroom.showroom_address, showroom.showroom_city].filter(Boolean)
   const locationText = locationParts.length > 0 ? ` in ${locationParts.join(', ')}` : ''
-  const variantText = car.variant ? ` (${car.variant})` : ''
+  const titleWithYear = car.title.includes(String(car.year))
+    ? car.title
+    : `${car.year} ${car.title}`
+  const hasVariantInTitle =
+    Boolean(car.variant) &&
+    car.title.toLowerCase().includes(car.variant!.trim().toLowerCase())
+  const variantText = car.variant && !hasVariantInTitle ? ` (${car.variant})` : ''
+
   const statusSentence =
     car.status === 'sold'
-      ? `${car.year} ${car.title.includes(String(car.year)) ? car.title.replace(String(car.year), '').trim() : car.title}${variantText} previously listed at ${showroom.showroom_name}${locationText}. This vehicle is currently marked as sold.`
-      : `${car.title}${variantText} listed at ${showroom.showroom_name}${locationText}${car.price_formatted ? ` at ${car.price_formatted}` : ''}.`
+      ? `${titleWithYear}${variantText} previously listed at ${showroom.showroom_name}${locationText}. This vehicle is currently marked as sold.`
+      : `${titleWithYear}${variantText} listed at ${showroom.showroom_name}${locationText}${car.price_formatted ? ` at ${car.price_formatted}` : ''}.`
 
   const specs: string[] = []
   if (car.transmission) specs.push(`${car.transmission} transmission`)

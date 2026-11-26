@@ -27,7 +27,17 @@ const sampleCar: CarDetail = {
   status: 'available',
   is_featured: true,
   description: null,
-  images: [],
+  images: [
+    {
+      id: 10,
+      car_id: 1,
+      image_path: 'cars/civic.jpg',
+      url: 'https://api.hassanmotors.pk/storage/cars/civic.jpg',
+      thumbnail_url: 'https://api.hassanmotors.pk/storage/cars/civic-thumb.jpg',
+      is_primary: true,
+      sort_order: 1,
+    },
+  ],
 }
 
 const sampleShowroom = {
@@ -37,18 +47,32 @@ const sampleShowroom = {
   showroom_phone: '+92 304 1142642',
 }
 
-test('buildFactualCarDescription uses only verified fields and omits unverified claims', () => {
-  const text = buildFactualCarDescription(sampleCar, sampleShowroom)
+test('buildFactualCarDescription avoids duplicating variant/year in available and sold titles', () => {
+  const availText = buildFactualCarDescription(sampleCar, sampleShowroom)
+  assert.equal(availText.includes('VTi Oriel (VTi Oriel)'), false)
+  assert.equal(availText.includes('2021 2021'), false)
+  assert.equal(availText.includes('2021 Honda Civic VTi Oriel listed at Hassan Motors'), true)
+  assert.equal(/accident-free|non-accidental|certified|guaranteed|inspected|genuine/i.test(availText), false)
 
-  assert.equal(text.includes('2021 Honda Civic VTi Oriel'), true)
-  assert.equal(text.includes('Hassan Motors'), true)
-  assert.equal(text.includes('Main West Canal Road, Faisalabad'), true)
-  assert.equal(text.includes('42,000 km recorded mileage'), true)
-  assert.equal(text.includes('1800 cc engine'), true)
-  assert.equal(/accident-free|non-accidental|certified|guaranteed|inspected|genuine/i.test(text), false)
+  const soldCar: CarDetail = { ...sampleCar, status: 'sold' }
+  const soldText = buildFactualCarDescription(soldCar, sampleShowroom)
+  assert.equal(soldText.includes('VTi Oriel (VTi Oriel)'), false)
+  assert.equal(soldText.includes('2021 2021'), false)
+  assert.equal(soldText.startsWith('2021 Honda Civic VTi Oriel previously listed at Hassan Motors'), true)
+  assert.equal(soldText.includes('This vehicle is currently marked as sold.'), true)
 })
 
-test('buildCarJsonLd generates valid Car schema for available and sold cars without fake reviews', () => {
+test('buildFactualCarDescription appends variant only when missing from title', () => {
+  const noVariantInTitle: CarDetail = {
+    ...sampleCar,
+    title: 'Honda Civic',
+    variant: 'RS Turbo',
+  }
+  const text = buildFactualCarDescription(noVariantInTitle, sampleShowroom)
+  assert.equal(text.startsWith('2021 Honda Civic (RS Turbo) listed at'), true)
+})
+
+test('buildCarJsonLd matches visible details for available and sold cars without fake reviews', () => {
   const desc = buildFactualCarDescription(sampleCar, sampleShowroom)
   const availableSchema = JSON.parse(
     JSON.stringify(
@@ -64,29 +88,67 @@ test('buildCarJsonLd generates valid Car schema for available and sold cars with
 
   assert.equal(availableSchema['@type'], 'Car')
   assert.equal(availableSchema['@id'], 'https://hassanmotors.pk/cars/2021-honda-civic-vti-oriel#car')
+  assert.equal(availableSchema.name, sampleCar.title)
+  assert.equal(availableSchema.model, sampleCar.model)
+  assert.equal(availableSchema.vehicleModelDate, String(sampleCar.year))
+  assert.equal(availableSchema.vehicleTransmission, sampleCar.transmission)
+  assert.equal(availableSchema.fuelType, sampleCar.fuel_type)
+  assert.equal(availableSchema.description, desc)
   assert.equal(availableSchema.brand.name, 'Honda')
+  assert.deepEqual(availableSchema.image, ['https://api.hassanmotors.pk/storage/cars/civic.jpg'])
+  assert.equal(availableSchema.offers.price, 6500000)
   assert.equal(availableSchema.offers.availability, 'https://schema.org/InStock')
   assert.equal(availableSchema.offers.seller['@id'], 'https://hassanmotors.pk/#dealer')
+  assert.equal(availableSchema.offers.seller.name, sampleShowroom.showroom_name)
+  assert.equal(availableSchema.offers.seller.telephone, sampleShowroom.showroom_phone)
   assert.equal(availableSchema.aggregateRating, undefined)
   assert.equal(availableSchema.review, undefined)
+})
 
-  const soldCar: CarDetail = { ...sampleCar, status: 'sold', mileage: null, exterior_color: null, price: 0 }
-  const soldSchema = JSON.parse(
+test('buildCarJsonLd omits missing optional fields and images cleanly', () => {
+  const minimalCar: CarDetail = {
+    id: 2,
+    brand: undefined,
+    model: 'Alto',
+    variant: null,
+    title: 'Suzuki Alto 2022',
+    slug: 'suzuki-alto-2022',
+    year: 2022,
+    price: 0,
+    price_formatted: 'PKR 0',
+    mileage: null,
+    engine_capacity: null,
+    transmission: 'manual',
+    fuel_type: 'petrol',
+    exterior_color: null,
+    registration_city: null,
+    assembly: null,
+    status: 'sold',
+    is_featured: false,
+    images: [],
+    primary_image: null,
+  }
+
+  const schema = JSON.parse(
     JSON.stringify(
       buildCarJsonLd(
-        soldCar,
-        'https://hassanmotors.pk/cars/2021-honda-civic-vti-oriel',
+        minimalCar,
+        'https://hassanmotors.pk/cars/suzuki-alto-2022',
         'https://hassanmotors.pk',
         sampleShowroom,
-        buildFactualCarDescription(soldCar, sampleShowroom)
+        buildFactualCarDescription(minimalCar, sampleShowroom)
       )
     )
   )
 
-  assert.equal(soldSchema.offers.availability, 'https://schema.org/SoldOut')
-  assert.equal(soldSchema.offers.price, undefined)
-  assert.equal(soldSchema.mileageFromOdometer, undefined)
-  assert.equal(soldSchema.color, undefined)
+  assert.equal(schema.brand, undefined)
+  assert.equal(schema.vehicleConfiguration, undefined)
+  assert.equal(schema.mileageFromOdometer, undefined)
+  assert.equal(schema.vehicleEngine, undefined)
+  assert.equal(schema.color, undefined)
+  assert.equal(schema.image, undefined)
+  assert.equal(schema.offers.availability, 'https://schema.org/SoldOut')
+  assert.equal(schema.offers.price, undefined)
 })
 
 test('buildBreadcrumbJsonLd generates 3-level BreadcrumbList', () => {
